@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bignerdranch.android.criminalintent.databinding.FragmentCrimeListBinding
 import kotlinx.coroutines.Job
@@ -43,16 +44,21 @@ class CrimeListFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            val crimes = crimeListViewModel.loadCrimes()
-            binding.crimeRecyclerView.adapter = CrimeListAdapter(crimes)
+//            val crimes = crimeListViewModel.loadCrimes()
+                crimeListViewModel.crimes.collect { crimes ->
+                    binding.crimeRecyclerView.adapter = CrimeListAdapter(crimes) { crimeId ->
+//                        findNavController().navigate( R.id.show_crime_detail)
+                        CrimeListFragmentDirections.showCrimeDetail(crimeId)
+                    }
+                }
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+        override fun onDestroyView() {
+            super.onDestroyView()
+            _binding = null
+        }
 
 //    private var job: Job? = null
 //
